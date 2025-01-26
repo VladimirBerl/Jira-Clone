@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,16 +27,14 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const formSchema = z.object({
-  username: z.string().min(1).max(256),
-  email: z.string().trim().email(),
-  password: z.string().min(6).max(256),
-});
+import { registerSchema } from "../schemas";
+import { useRegister } from "../api/use-register";
 
 export const SignUpCard = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { mutate,isPending } = useRegister();
+
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
       email: "",
@@ -42,8 +42,10 @@ export const SignUpCard = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = (values: z.infer<typeof registerSchema>) => {
+    mutate({
+      json: values,
+    });
   };
 
   return (
@@ -115,8 +117,8 @@ export const SignUpCard = () => {
                 </FormItem>
               )}
             />
-            <Button size={"lg"} disabled={false} className="w-full">
-              Login
+            <Button size={"lg"} disabled={isPending} className="w-full">
+              Register
             </Button>
           </form>
         </Form>
@@ -128,7 +130,7 @@ export const SignUpCard = () => {
       <CardContent className="p-7 flex flex-col gap-y-4">
         <Button
           size={"lg"}
-          disabled={false}
+          disabled={isPending}
           variant={"secondary"}
           className="w-full"
         >
@@ -137,7 +139,7 @@ export const SignUpCard = () => {
         </Button>
         <Button
           size={"lg"}
-          disabled={false}
+          disabled={isPending}
           variant={"secondary"}
           className="w-full"
         >

@@ -1,13 +1,16 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 
+import auth from "@/features/auth/server/route";
+
 const app = new Hono().basePath("/api");
 
-app.get("/hello", (c) => c.json({ message: "Hello World" }));
+// Объединение маршрутов необходимо для zod валидатора типов
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const routes = app.route("/auth", auth);
 
-app.get("/project/:id", (c) => {
-  const { id } = c.req.param();
-  return c.json({ project: id });
-});
 
 export const GET = handle(app);
+export const POST = handle(app);
+
+export type AppType = typeof routes;

@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,23 +20,24 @@ import {
   FormField,
 } from "@/components/ui/form";
 import Link from "next/link";
-
-const formSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(1).max(256),
-});
+import { loginSchema } from "../schemas";
+import { useLogin } from "../api/use-login";
 
 export const SignInCard = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { mutate, isPending } = useLogin();
+
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    mutate({
+      json: values,
+    });
   };
 
   return (
@@ -81,7 +84,7 @@ export const SignInCard = () => {
               )}
             />
 
-            <Button size={"lg"} disabled={false} className="w-full">
+            <Button size={"lg"} disabled={isPending} className="w-full">
               Login
             </Button>
           </form>
@@ -94,7 +97,7 @@ export const SignInCard = () => {
       <CardContent className="p-7 flex flex-col gap-y-4">
         <Button
           size={"lg"}
-          disabled={false}
+          disabled={isPending}
           variant={"secondary"}
           className="w-full"
         >
@@ -103,7 +106,7 @@ export const SignInCard = () => {
         </Button>
         <Button
           size={"lg"}
-          disabled={false}
+          disabled={isPending}
           variant={"secondary"}
           className="w-full"
         >
