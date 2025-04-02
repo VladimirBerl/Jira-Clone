@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { QueryProviders } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "./globals.css";
 
@@ -23,8 +24,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn(inter.className, "antialiased min-h-screen")}>
         <QueryProviders>
-          <Toaster />
-          {children}
+          <NuqsAdapter>
+            <Toaster />
+            {children}
+          </NuqsAdapter>
         </QueryProviders>
       </body>
     </html>
